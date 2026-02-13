@@ -1,0 +1,8 @@
+build/
+install/
+config/
+test/
+log/
+__pycache__/
+*.pyc
+*.engine
