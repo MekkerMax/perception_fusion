@@ -1,5 +1,7 @@
 import rclpy
+import os
 from rclpy.node import Node
+from ament_index_python.packages import get_package_share_directory
 from sensor_msgs.msg import Image, CameraInfo
 from visualization_msgs.msg import Marker, MarkerArray
 from geometry_msgs.msg import PointStamped 
@@ -64,7 +66,17 @@ class ObjectTracker:
 class FusionNode(Node):
     def __init__(self):
         super().__init__('camera_fusion_node')
-        self.model = YOLO('yolov8s.engine')
+        super().__init__('camera_fusion_node')
+    
+        pkg_share = get_package_share_directory('perception_fusion')
+        model_path = os.path.join(pkg_share, 'config', 'yolov8s.engine')
+        
+
+        if not os.path.exists(model_path):
+            self.get_logger().error(f"Model not found at: {model_path}")
+        else:
+            self.get_logger().info(f"Loading TensorRT Engine: {model_path}")
+            self.model = YOLO(model_path)
         self.bridge = CvBridge()
         self.tracker = ObjectTracker()
         self.current_detections = [] 
